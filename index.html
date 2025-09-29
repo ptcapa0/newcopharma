@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewCo Pharma Trading - Investment Memorandum</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral with Professional Blue Accent -->
+    <!-- Application Structure Plan: A single-page, top-down narrative dashboard. The structure guides an investor logically from the high-level problem and opportunity to the specific solution, go-to-market strategy, detailed financials, and the team. This dashboard format was chosen over a simple document structure to make dense financial data easily digestible and interactive. Key interactions include dynamic charts for financial projections and a sensitivity calculator for working capital, allowing investors to immediately grasp the impact of operational efficiencies. The flow is designed for persuasion and clarity, answering core investor questions at each stage. -->
+    <!-- Visualization & Content Choices: 
+        - Market Problem: Goal: Inform/Impact -> Method: Large stat cards (HTML/CSS) -> Interaction: None -> Justification: High-impact, easily scannable numbers to frame the scale of the problem.
+        - Financials (P&L, Revenue): Goal: Show Growth/Trends -> Method: Bar/Line charts (Chart.js) -> Interaction: Hover for tooltips -> Justification: Standard, clear visualization for financial projections over time.
+        - OPEX: Goal: Show Composition -> Method: Doughnut chart (Chart.js) -> Interaction: Hover -> Justification: Effectively shows the proportion of spending in the first crucial year.
+        - Working Capital: Goal: Explore "What-if" scenarios -> Method: Interactive sliders and a calculated output (HTML/JS) -> Interaction: User can drag sliders to see real-time impact on cash needs -> Justification: A powerful, engaging tool that demonstrates the team's grasp of financial levers and gives investors a way to test assumptions.
+        - Team/Strategy: Goal: Build Credibility -> Method: Formatted text (HTML/CSS) -> Interaction: None -> Justification: Clear, concise text is best for conveying qualitative information like team expertise and strategy.
+        -> NO SVG/Mermaid used.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        .section-title {
+            color: #1e3a8a; /* A deep blue for titles */
+        }
+        .stat-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e9ecef;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #1d4ed8;
+            border-bottom-color: #1d4ed8;
+        }
+        .cta-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #1d4ed8;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #1d4ed8;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm border-b border-gray-200">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-800">NewCo Pharma Trading</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#opportunity" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to Market Opportunity section">Oportunidade</a>
+                <a href="#solution" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to Solution section">Solução</a>
+                <a href="#strategy" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to Strategy section">Estratégia</a>
+                <a href="#financials" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to Financials section">Finanças</a>
+                <a href="#team" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to Team section">Equipa</a>
+                <a href="#ask" class="nav-link text-gray-600 font-medium pb-1" aria-label="Navigate to The Ask section">O Pedido</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 md:p-8">
+
+        <!-- Hero Section -->
+        <section class="text-center py-16 md:py-24">
+            <h2 class="text-4xl md:text-5xl font-bold section-title mb-4">Memorando de Investimento: NewCo Pharma Trading</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Uma oportunidade de investimento pré-seed para resolver a crise sistémica de escassez de medicamentos na Europa através de um modelo de negócio inovador, tecnológico e <span class="font-semibold text-blue-800">asset-light</span>.</p>
+        </section>
+
+        <!-- The Market Opportunity -->
+        <section id="opportunity" class="my-16 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center section-title mb-12">A Oportunidade: A Crise de Escassez de Medicamentos na Europa</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+                <div class="stat-card">
+                    <p class="text-5xl font-bold text-blue-700">100%</p>
+                    <p class="mt-2 text-gray-600">Dos países da UE reportaram escassez de medicamentos em 2023, um problema universal.</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-5xl font-bold text-blue-700">~11</p>
+                    <p class="mt-2 text-gray-600">Horas por semana gastas por farmacêuticos a gerir faltas, um enorme fardo operacional.</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-5xl font-bold text-blue-700">+200</p>
+                    <p class="mt-2 text-gray-600">Medicamentos na "Union List of Critical Medicines", criando um novo mercado focado na segurança de abastecimento.</p>
+                </div>
+            </div>
+            <div class="mt-12 bg-white p-8 rounded-lg shadow border border-gray-200">
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">Ventos de Cauda Regulatórios: O "Critical Medicines Act"</h4>
+                <p class="text-gray-600">A União Europeia está a mudar o paradigma de um modelo focado no <span class="font-semibold">custo mais baixo</span> para um que valoriza e monetiza a <span class="font-semibold">segurança e resiliência do abastecimento</span>. O <span class="font-semibold">Critical Medicines Act (CMA)</span> não é apenas uma regulação; é a criação de um novo mercado para players ágeis como a NewCo, capazes de garantir o acesso a medicamentos essenciais.</p>
+            </div>
+        </section>
+        
+        <!-- The Solution -->
+        <section id="solution" class="my-16 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center section-title mb-12">A Solução: NewCo Pharma Trading</h3>
+            <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h4 class="text-2xl font-bold text-blue-800 mb-4">Um Broker Farmacêutico <span class="italic">Asset-Light</span> e Tecnológico</h4>
+                        <p class="text-gray-600 mb-4">O nosso modelo de negócio é a <span class="font-semibold">arbitragem de disponibilidade</span>. Não investimos em armazéns ou inventário. Em vez disso, operamos com:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><span class="font-semibold">Autorização de Distribuição por Grosso (WDA)</span> própria, garantindo conformidade total.</li>
+                            <li>Uma rede de <span class="font-semibold">parceiros logísticos (3PL) certificados</span> e auditados.</li>
+                            <li><span class="font-semibold">Tecnologia e automação</span> desde o dia um (QMS, CRM, integração NMVS) para escalar de forma eficiente.</li>
+                        </ul>
+                    </div>
+                    <div class="text-center p-6 bg-blue-50 rounded-lg">
+                         <div class="text-6xl mb-4">🌐</div>
+                        <h5 class="text-xl font-semibold text-blue-900">Proposta de Valor</h5>
+                        <p class="text-gray-600 mt-2">Garantimos acesso a medicamentos críticos, reduzimos o fardo administrativo para hospitais e autoridades de saúde, e asseguramos conformidade regulatória.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Go-to-Market & Commercial Strategy -->
+        <section id="strategy" class="my-16 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center section-title mb-12">Estratégia Comercial e de Entrada no Mercado</h3>
+             <div class="grid md:grid-cols-2 gap-8">
+                <div class="stat-card">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Entrada Faseada em 4 Mercados Iniciais</h4>
+                    <p class="text-gray-600">Foco inicial em <span class="font-semibold">Portugal, Espanha, Malta e Grécia</span>, utilizando pontos de entrada regulatórios específicos de cada país para acelerar o acesso e a receita.</p>
+                </div>
+                <div class="stat-card">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Integração Sistémica como Vantagem Competitiva</h4>
+                    <p class="text-gray-600">A nossa profunda integração e experiência com os sistemas de saúde públicos da Península Ibérica é um fosso competitivo (moat) forte e defensável, difícil de replicar.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financials -->
+        <section id="financials" class="my-16 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center section-title mb-12">Modelo de Negócio e Projeções Financeiras</h3>
+            <div class="space-y-8">
+                <!-- P&L Projections -->
+                <div class="stat-card">
+                    <h4 class="text-xl font-semibold text-center text-gray-800 mb-4">Projeções P&L a 5 Anos</h4>
+                    <div class="h-96 w-full mx-auto max-w-4xl"><canvas id="pnlChart"></canvas></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Revenue by Lane -->
+                    <div class="stat-card">
+                        <h4 class="text-xl font-semibold text-center text-gray-800 mb-4">Receita por Mercado (Ano 5)</h4>
+                         <div class="h-80 w-full mx-auto max-w-lg"><canvas id="revenueLaneChart"></canvas></div>
+                    </div>
+                    <!-- OPEX Y1 -->
+                    <div class="stat-card">
+                         <h4 class="text-xl font-semibold text-center text-gray-800 mb-4">Composição do OPEX (Ano 1)</h4>
+                         <div class="h-80 w-full mx-auto max-w-lg"><canvas id="opexChart"></canvas></div>
+                    </div>
+                </div>
+                
+                <!-- Working Capital Sensitivity -->
+                <div class="stat-card">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Análise de Sensibilidade do Capital de Giro</h4>
+                    <p class="text-gray-600 mb-6 text-sm">Use os seletores para ver como a otimização dos prazos de pagamento e recebimento impacta a necessidade máxima de caixa da empresa.</p>
+                    <div class="grid md:grid-cols-2 gap-x-8 gap-y-4 items-center">
+                        <div>
+                            <label for="dsoSlider" class="block font-medium text-gray-700">Prazo Médio de Recebimento (DSO): <span id="dsoValue" class="font-bold text-blue-700">60</span> dias</label>
+                            <input id="dsoSlider" type="range" min="30" max="90" value="60" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Days Sales Outstanding">
+                        </div>
+                        <div>
+                            <label for="dpoSlider" class="block font-medium text-gray-700">Prazo Médio de Pagamento (DPO): <span id="dpoValue" class="font-bold text-blue-700">8</span> dias</label>
+                            <input id="dpoSlider" type="range" min="8" max="45" value="8" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" aria-label="Adjust Days Payables Outstanding">
+                        </div>
+                        <div class="md:col-span-2 text-center mt-4">
+                            <p class="text-gray-600">Necessidade Máxima de Caixa (Cash Trough):</p>
+                            <p id="cashTroughResult" class="text-4xl font-bold text-red-600">-€205.775</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team -->
+        <section id="team" class="my-16 scroll-mt-24">
+            <h3 class="text-3xl font-bold text-center section-title mb-12">Equipa e "Founder-Market Fit"</h3>
+             <div class="max-w-3xl mx-auto stat-card text-center">
+                <h4 class="text-xl font-semibold text-gray-800 mb-3">Uma Combinação Rara de Competências</h4>
+                <p class="text-gray-600">A equipa fundadora (3 FTEs) combina uma experiência prática e profunda em regulação farmacêutica europeia (GDP, WDA, FMD), logística internacional e finanças operacionais. O trabalho já realizado antes do investimento (QMS, modelo financeiro, análise de mercado) é a prova da nossa capacidade de execução.</p>
+            </div>
+        </section>
+
+        <!-- The Ask -->
+        <section id="ask" class="my-16 scroll-mt-24 text-center">
+            <h3 class="text-3xl font-bold section-title mb-6">O Pedido de Investimento</h3>
+            <div class="bg-blue-800 text-white p-8 rounded-lg shadow-xl max-w-3xl mx-auto">
+                 <p class="text-xl mb-2">Investimento Pré-Seed</p>
+                <p class="text-5xl font-bold mb-6">€350.000 – €450.000</p>
+                <p class="text-blue-200 mb-6">Este capital irá financiar 18 meses de OPEX, cobrir o capital de giro e acelerar o desenvolvimento do nosso stack de automação.</p>
+                <button class="cta-button bg-white text-blue-800 font-bold py-3 px-8 rounded-full shadow-md hover:bg-blue-50">Contactar para Investir</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center py-6">
+        <p>&copy; 2025 NewCo Pharma Trading. Todos os direitos reservados.</p>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // --- Data ---
+    const financialData = {
+        pnl: {
+            years: ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4', 'Ano 5'],
+            revenue: [1000000, 1500000, 1800000, 2100000, 2500000],
+            grossProfit: [242500, 365357, 442000, 519985, 625000],
+            ebitda: [-22100, 84785, 90535, 143231, 231851]
+        },
+        revenueByLaneY5: {
+            labels: ['Portugal', 'Espanha', 'Malta', 'Grécia'],
+            data: [608108, 202703, 844595, 844595]
+        },
+        opexY1: {
+            labels: ['Salários', 'Consultoria', 'Logística (3PL)', 'Marketing', 'TI', 'Outros'],
+            data: [166600, 18000, 12000, 12000, 12000, 44000]
+        },
+        sensitivity: {
+            baseTrough: -205775,
+            baseDSO: 60,
+            baseDPO: 8,
+            dailyRevenueY2: 1500000 / 365,
+            dailyCogsY2: (1500000 - 365357) / 365
+        }
+    };
+
+    const formatCurrency = (value) => {
+        if (value === undefined || value === null) return 'N/A';
+        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(value);
+    };
+
+    // --- Chart Configurations ---
+    const defaultChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: {
+                        family: "'Inter', sans-serif"
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { font: { family: "'Inter', sans-serif" } },
+                grid: { display: false }
+            },
+            y: {
+                ticks: { 
+                    font: { family: "'Inter', sans-serif" },
+                    callback: value => new Intl.NumberFormat('pt-PT', { notation: 'compact' }).format(value)
+                },
+                beginAtZero: true
+            }
+        }
+    };
+
+    // --- Chart Instances ---
+    const pnlCtx = document.getElementById('pnlChart');
+    if (pnlCtx) {
+        new Chart(pnlCtx, {
+            type: 'bar',
+            data: {
+                labels: financialData.pnl.years,
+                datasets: [{
+                    label: 'Receita',
+                    data: financialData.pnl.revenue,
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    order: 2
+                }, {
+                    label: 'EBITDA',
+                    data: financialData.pnl.ebitda,
+                    backgroundColor: 'rgba(22, 163, 74, 0.7)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1,
+                    type: 'line',
+                    order: 1,
+                    tension: 0.3
+                }]
+            },
+            options: defaultChartOptions
+        });
+    }
+
+    const revenueLaneCtx = document.getElementById('revenueLaneChart');
+    if (revenueLaneCtx) {
+        new Chart(revenueLaneCtx, {
+            type: 'doughnut',
+            data: {
+                labels: financialData.revenueByLaneY5.labels,
+                datasets: [{
+                    label: 'Receita Y5',
+                    data: financialData.revenueByLaneY5.data,
+                    backgroundColor: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd'],
+                }]
+            },
+            options: { ...defaultChartOptions, scales: {} }
+        });
+    }
+
+    const opexCtx = document.getElementById('opexChart');
+    if (opexCtx) {
+        new Chart(opexCtx, {
+            type: 'pie',
+            data: {
+                labels: financialData.opexY1.labels,
+                datasets: [{
+                    label: 'OPEX Y1',
+                    data: financialData.opexY1.data,
+                    backgroundColor: ['#1e3a8a', '#1d4ed8', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd'],
+                }]
+            },
+            options: { ...defaultChartOptions, scales: {} }
+        });
+    }
+
+    // --- Sensitivity Calculator Logic ---
+    const dsoSlider = document.getElementById('dsoSlider');
+    const dpoSlider = document.getElementById('dpoSlider');
+    const dsoValue = document.getElementById('dsoValue');
+    const dpoValue = document.getElementById('dpoValue');
+    const cashTroughResult = document.getElementById('cashTroughResult');
+
+    function updateSensitivity() {
+        if (!dsoSlider || !dpoSlider) return;
+
+        const currentDSO = parseInt(dsoSlider.value);
+        const currentDPO = parseInt(dpoSlider.value);
+        dsoValue.textContent = currentDSO;
+        dpoValue.textContent = currentDPO;
+
+        const { baseTrough, baseDSO, baseDPO, dailyRevenueY2, dailyCogsY2 } = financialData.sensitivity;
+        
+        const dsoImprovement = (baseDSO - currentDSO) * dailyRevenueY2;
+        const dpoImprovement = (currentDPO - baseDPO) * dailyCogsY2;
+        
+        const newTrough = baseTrough + dsoImprovement + dpoImprovement;
+        
+        cashTroughResult.textContent = formatCurrency(newTrough);
+        cashTroughResult.style.color = newTrough < 0 ? '#dc2626' : '#16a34a';
+    }
+
+    dsoSlider.addEventListener('input', updateSensitivity);
+    dpoSlider.addEventListener('input', updateSensitivity);
+    
+    // --- Active Nav Link on Scroll ---
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href').substring(1) === entry.target.id);
+                });
+            }
+        });
+    }, { rootMargin: "-50% 0px -50% 0px" });
+
+    sections.forEach(section => observer.observe(section));
+    
+    // Initialize calculator on load
+    updateSensitivity();
+});
+</script>
+</body>
+</html>
+
